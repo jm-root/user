@@ -130,10 +130,14 @@ module.exports = function (opts = {}) {
       opts.conditions || (opts.conditions = {})
       opts.conditions.$or = ary
     })
-    .use('/users', msm(service.user, {
-      list: listOpts,
-      get: getOpts
-    }))
+
+  service.onReady()
+    .then(doc => {
+      router.use('/users', msm(service.user, {
+        list: listOpts,
+        get: getOpts
+      }))
+    })
 
   return router
 }
