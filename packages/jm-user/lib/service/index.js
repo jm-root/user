@@ -52,6 +52,7 @@ class Service {
     this.secret = opts.secret || ''
 
     let cb = db => {
+      opts.db = db
       this.db = db
       this.sq = jm.sequence({db})
       this.user = user(this, opts)
