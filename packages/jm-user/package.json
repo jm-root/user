@@ -1,0 +1,42 @@
+{
+  "name": "jm-user",
+  "version": "2.0.0",
+  "description": "general user service",
+  "main": "./lib/index",
+  "scripts": {
+    "start": "jm-server",
+    "cluster": "jm-server --cluster",
+    "test": "jest"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/jm-root/user.git"
+  },
+  "keywords": [
+    "javascript",
+    "user"
+  ],
+  "author": {
+    "name": "Jeff YU"
+  },
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/jm-root/user/issues"
+  },
+  "homepage": "https://github.com/jm-root/user",
+  "dependencies": {
+    "config": "^2.0.1",
+    "fs-extra": "^3.0.1",
+    "jm-dao": "^1.0.5",
+    "jm-ms-mongoose": "^1.0.0",
+    "jm-ms-wrapper": "^1.0.1",
+    "jm-server": "^2.0.5",
+    "validator": "^7.1.0"
+  },
+  "devDependencies": {
+    "jest": "^22.4.3"
+  },
+  "jest": {
+    "testEnvironment": "node"
+  }
+}
