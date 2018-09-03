@@ -2,7 +2,7 @@ const log = require('jm-log4js')
 const logger = log.getLogger('user')
 const MS = require('jm-ms')
 
-let ms = MS()
+let ms = new MS()
 
 module.exports = function (opts, app) {
   ['gateway'].forEach(function (key) {
@@ -17,12 +17,10 @@ module.exports = function (opts, app) {
     }
   }
 
-  let bind = (name, uri) => {
+  let bind = async (name, uri) => {
     uri || (uri = '/' + name)
-    ms.client({
+    o[name] = await ms.client({
       uri: opts.gateway + uri
-    }, function (err, doc) {
-      !err && doc && (o[name] = doc)
     })
   }
   bind('mq')
