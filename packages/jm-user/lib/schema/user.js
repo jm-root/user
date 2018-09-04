@@ -13,6 +13,7 @@ let schemaDefine = {
   nick: {type: String}, // 昵称，可重复
   avatarUrl: {type: String}, // 头像网址
   gender: {type: Number, default: 0}, // 性别 默认0未知 1男 2女
+  age: {type: Number, default: 0}, // 年龄
   country: {type: String}, // 国家
   province: {type: String}, // 省
   city: {type: String}, // 市
