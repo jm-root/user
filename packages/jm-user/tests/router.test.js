@@ -51,6 +51,17 @@ let prepare = async function () {
 }
 
 describe('service', () => {
+  test('exists', async () => {
+    let doc = await prepare()
+    doc = await router.get(`/users/${doc.id}/exists`)
+    console.log(doc)
+    expect(doc.ret).toBeTruthy()
+
+    doc = await router.get(`/users/none/exists`)
+    console.log(doc)
+    expect(!doc.ret).toBeTruthy()
+  })
+
   test('list', async () => {
     let doc = await prepare()
     doc = await router.get('/users', {rows: 2})

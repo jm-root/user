@@ -87,11 +87,11 @@ module.exports = function (opts = {}) {
     .add('/signup', 'post', signup)
     .use('/users/:id/avatar', avatar(service, opts))
     .add('/users/:id/exists', 'get', async opts => {
-      try {
-        let doc = service.findUser(opts.params.id)
-        if (doc) return {ret: doc.id}
-      } catch (e) {
-        return {ret: 0}
+      const doc = await service.findUser(opts.params.id)
+      if (doc) {
+        return {ret: doc.id}
+      } else {
+        return {ret: false}
       }
     })
     .add('/users', 'post', signup)
