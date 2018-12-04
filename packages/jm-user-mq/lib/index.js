@@ -5,10 +5,6 @@ const MS = require('jm-ms')
 let ms = new MS()
 
 module.exports = function (opts, app) {
-  ['gateway'].forEach(function (key) {
-    process.env[key] && (opts[key] = process.env[key])
-  })
-
   let o = {
     ready: true,
 

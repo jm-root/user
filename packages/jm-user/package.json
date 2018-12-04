@@ -1,6 +1,6 @@
 {
   "name": "jm-user",
-  "version": "2.0.1",
+  "version": "2.0.2-1",
   "description": "general user service",
   "main": "./lib/index",
   "scripts": {
@@ -30,7 +30,7 @@
     "jm-dao": "^1.0.5",
     "jm-ms-mongoose": "^1.0.0",
     "jm-ms-wrapper": "^1.0.1",
-    "jm-server": "^2.0.5",
+    "jm-server": "^2.0.8",
     "validator": "^7.1.0"
   },
   "devDependencies": {
