@@ -4,8 +4,10 @@ const bson = require('bson')
 const jm = require('jm-dao')
 const event = require('jm-event')
 const error = require('jm-err')
+const log = require('jm-log4js')
 const crypto = require('crypto')
 const consts = require('../consts')
+const logger = log.getLogger('user')
 const t = require('../locale')
 const user = require('./user')
 const avatar = require('./avatar')
@@ -62,11 +64,18 @@ class Service {
     }
 
     const db = opts.db
+    let p = null
     if (!db) {
-      jm.db.connect().then(cb)
+      p = jm.db.connect()
     } else if (typeof db === 'string') {
-      jm.db.connect(db).then(cb)
+      p = jm.db.connect(db)
     }
+    p
+      .then(cb)
+      .catch(e => {
+        logger.error(e)
+        process.exit(Err.FA_CONNECT_DB.err)
+      })
 
     this.onReady()
   }

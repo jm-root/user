@@ -13,5 +13,6 @@ module.exports = {
   'Invalid Account': '无效账户',
   'Invalid Email': '无效邮箱',
   'Invalid Mobile': '无效手机',
-  'Account Disabled':'账号已禁用'
+  'Account Disabled': '账号已禁用',
+  'Connect DB Fail': '连接数据库失败'
 }

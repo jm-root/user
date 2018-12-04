@@ -69,6 +69,10 @@ module.exports = {
     FA_ACCOUNT_BAN: {
       err: BaseErrCode++,
       msg: 'Account Disabled'
+    },
+    FA_CONNECT_DB: {
+      err: BaseErrCode++,
+      msg: 'Connect DB Fail'
     }
   }
 }
