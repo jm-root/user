@@ -57,7 +57,7 @@ module.exports = function (service, opts = {}) {
     })
 
   let model = jm.dao({
-    db: opts.db,
+    db: service.db,
     modelName: opts.model_name || 'user',
     tableName: opts.table_name,
     prefix: opts.table_name_prefix,

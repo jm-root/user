@@ -53,24 +53,25 @@ class Service {
     this.Mode = Mode
     this.secret = opts.secret || ''
 
-    let cb = db => {
-      db.on('connected', () => {
-        this.emit('ready')
-        logger.info('db connected. ready.')
-      })
-      db.on('disconnected', () => {
-        this.ready = false
-        this.onReady()
-        logger.info('db disconnected. not ready.')
-      })
+    const onConnected = () => {
+      this.emit('ready')
+      logger.info('db connected. ready.')
+    }
+    const onDisconnected = () => {
+      this.ready = false
+      this.onReady()
+      logger.info('db disconnected. not ready.')
+    }
 
-      opts.db = db
+    let cb = db => {
+      db.on('connected', onConnected)
+      db.on('disconnected', onDisconnected)
+
       this.db = db
       this.sq = jm.sequence({db})
       this.user = user(this, opts)
       this.avatar = avatar(this, opts)
-      this.emit('ready')
-      logger.info('db connected. ready.')
+      onConnected()
     }
 
     const db = opts.db
