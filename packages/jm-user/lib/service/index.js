@@ -54,13 +54,23 @@ class Service {
     this.secret = opts.secret || ''
 
     let cb = db => {
+      db.on('connected', () => {
+        this.emit('ready')
+        logger.info('db connected. ready.')
+      })
+      db.on('disconnected', () => {
+        this.ready = false
+        this.onReady()
+        logger.info('db disconnected. not ready.')
+      })
+
       opts.db = db
       this.db = db
       this.sq = jm.sequence({db})
       this.user = user(this, opts)
       this.avatar = avatar(this, opts)
-      this.ready = true
       this.emit('ready')
+      logger.info('db connected. ready.')
     }
 
     const db = opts.db
@@ -80,12 +90,12 @@ class Service {
     this.onReady()
   }
 
-  onReady () {
-    let self = this
-    return new Promise(function (resolve, reject) {
-      if (self.ready) return resolve(self.ready)
-      self.once('ready', function () {
-        resolve(self.ready)
+  async onReady () {
+    if (this.ready) return
+    return new Promise(resolve => {
+      this.once('ready', () => {
+        this.ready = true
+        resolve()
       })
     })
   }
