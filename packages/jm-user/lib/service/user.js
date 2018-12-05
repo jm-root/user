@@ -64,7 +64,7 @@ module.exports = function (service, opts = {}) {
     schema: schema,
     schemaExt: opts.schemaExt
   })
-  event.enableEvent(model)
+  event.enableEvent(model, {force: true, clean: true})
 
   return model
 }

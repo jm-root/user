@@ -24,7 +24,7 @@ module.exports = function (service, opts = {}) {
       return prefix + '/' + id + '.img'
     }
   }
-  event.enableEvent(model)
+  event.enableEvent(model, {force: true, clean: true})
 
   return model
 }
