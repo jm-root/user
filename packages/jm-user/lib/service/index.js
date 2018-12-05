@@ -68,7 +68,7 @@ class Service {
       db.on('disconnected', onDisconnected)
 
       this.db = db
-      this.sq = jm.sequence({db})
+      this.sq = jm.sequence({ db })
       this.user = user(this, opts)
       this.avatar = avatar(this, opts)
       onConnected()
@@ -120,7 +120,7 @@ class Service {
     if (!password) return null
     let salt = this.createKey('')
     password = hash(password + salt)
-    return {password, salt}
+    return { password, salt }
   }
 
   /**
@@ -157,7 +157,7 @@ class Service {
    */
   updateUser (id, opts, cb) {
     let self = this
-    let c = {_id: id}
+    let c = { _id: id }
 
     if (opts.password && !opts.salt) {
       let o = this.encryptPassword(opts.password)
@@ -279,7 +279,7 @@ class Service {
       })
     }
 
-    return this.user.findOne({'$or': query}, cb)
+    return this.user.findOne({ '$or': query }, cb)
   }
 
   /**
@@ -293,8 +293,8 @@ class Service {
     if (!doc) throw error.err(Err.FA_USER_NOT_EXIST)
     if (!doc.active) throw error.err(Err.FA_ACCOUNT_BAN)
     if (!this.checkPassword(doc, password)) throw error.err(Err.FA_INVALID_PASSWD)
-    this.emit('signon', {id: doc.id})
-    return {id: doc.id}
+    this.emit('signon', { id: doc.id })
+    return { id: doc.id }
   }
 
   /**
@@ -354,20 +354,20 @@ class Service {
       return self.user
         .create(data)
         .then(function (doc) {
-          self.emit('signup', {id: doc.id})
+          self.emit('signup', { id: doc.id })
           return doc
         })
     }
     return this.validate(data)
       .then(function () {
-        return self.user.findOne({'$or': query})
+        return self.user.findOne({ '$or': query })
       })
       .then(function (doc) {
         if (doc) return Promise.reject(error.err(Err.FA_USER_EXIST))
         return self.user.create(data)
       })
       .then(function (doc) {
-        self.emit('signup', {id: doc.id})
+        self.emit('signup', { id: doc.id })
         return doc
       })
   }

@@ -1,7 +1,5 @@
-const zh_CN = require('./zh_CN')
-
 let lngs = {
-  zh_CN
+  zh_CN: require('./zh_CN')
 }
 
 /**

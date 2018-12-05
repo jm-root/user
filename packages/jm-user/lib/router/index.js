@@ -15,7 +15,7 @@ module.exports = function (opts = {}) {
   let listOpts = opts.list || {
     conditions: {},
     options: {
-      sort: [{'crtime': -1}]
+      sort: [{ 'crtime': -1 }]
     },
     fields: {
       salt: 0,
@@ -49,7 +49,7 @@ module.exports = function (opts = {}) {
   }
 
   let signon = async opts => {
-    return await service.signon(opts.data.username, opts.data.password)
+    return service.signon(opts.data.username, opts.data.password)
   }
 
   let signup = async opts => {
@@ -74,7 +74,7 @@ module.exports = function (opts = {}) {
       return
     }
     await service.updateUserExt(opts.params.id, opts.data, mode)
-    return {ret: 1}
+    return { ret: 1 }
   }
 
   let router = ms.router()
@@ -89,19 +89,19 @@ module.exports = function (opts = {}) {
     .add('/users/:id/exists', 'get', async opts => {
       const doc = await service.findUser(opts.params.id)
       if (doc) {
-        return {ret: doc.id}
+        return { ret: doc.id }
       } else {
-        return {ret: false}
+        return { ret: false }
       }
     })
     .add('/users', 'post', signup)
     .add('/users/:id', 'post', async opts => {
       await service.updateUser(opts.params.id, opts.data)
-      return {ret: 1}
+      return { ret: 1 }
     })
     .add('/users/:id/password', 'post', async opts => {
       await service.updatePassword(opts.params.id, opts.data.oldPassword, opts.data.password)
-      return {ret: 1}
+      return { ret: 1 }
     })
     .add('/users/:id/:extmode', 'post', updateExt)
     .add('/users', 'get', async opts => {
@@ -110,22 +110,22 @@ module.exports = function (opts = {}) {
       if (!search) return
       let ary = []
       // 格式化特殊字符
-      search = search.replace(/([`~!@#\$%\^\&\*\(\)_\+<>\?:"\{\},\.\\\/;'\[\]])/g, '\\$1')
+      search = search.replace(/([`~!@#\$%\^\&\*\(\)_\+<>\?:"\{\},\.\\\/;'\[\]])/g, '\\$1') // eslint-disable-line
       let pattern = '.*?' + search + '.*?'
       if (ObjectId.isValid(search)) {
-        ary.push({_id: search})
-        ary.push({ip: {$regex: pattern, $options: 'i'}})
-        ary.push({account: {$regex: pattern, $options: 'i'}})
+        ary.push({ _id: search })
+        ary.push({ ip: { $regex: pattern, $options: 'i' } })
+        ary.push({ account: { $regex: pattern, $options: 'i' } })
       } else if (!isNaN(search)) {
-        ary.push({uid: Number(search)})
-        ary.push({mobile: {$regex: pattern}})
-        ary.push({account: {$regex: pattern, $options: 'i'}})
+        ary.push({ uid: Number(search) })
+        ary.push({ mobile: { $regex: pattern } })
+        ary.push({ account: { $regex: pattern, $options: 'i' } })
       } else {
-        ary.push({account: {$regex: pattern, $options: 'i'}})
-        ary.push({mobile: {$regex: pattern}})
-        ary.push({nick: {$regex: pattern, $options: 'i'}})
-        ary.push({ip: {$regex: pattern, $options: 'i'}})
-        ary.push({mac: {$regex: pattern, $options: 'i'}})
+        ary.push({ account: { $regex: pattern, $options: 'i' } })
+        ary.push({ mobile: { $regex: pattern } })
+        ary.push({ nick: { $regex: pattern, $options: 'i' } })
+        ary.push({ ip: { $regex: pattern, $options: 'i' } })
+        ary.push({ mac: { $regex: pattern, $options: 'i' } })
       }
       opts.conditions || (opts.conditions = {})
       opts.conditions.$or = ary

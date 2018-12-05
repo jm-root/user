@@ -33,7 +33,7 @@ module.exports = function (opts, app) {
   let user = app.modules.user
 
   let send = async function (topic, message) {
-    return o.mq.post(`/${topic}`, {message})
+    return o.mq.post(`/${topic}`, { message })
       .catch(e => {
         logger.error(`send mq fail. topic: ${topic} message: ${JSON.stringify(message)}`)
         logger.error(e)

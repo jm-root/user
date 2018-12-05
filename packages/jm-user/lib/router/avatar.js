@@ -5,10 +5,10 @@ module.exports = function (service, opts) {
   router
     .add('/', 'post', async function (opts = {}) {
       await service.avatar.save(opts.params.id, opts.data.imageData)
-      return {ret: service.avatar.get(opts.params.id)}
+      return { ret: service.avatar.get(opts.params.id) }
     })
     .add('/', 'get', function (opts) {
-      return {ret: service.avatar.get(opts.params.id)}
+      return { ret: service.avatar.get(opts.params.id) }
     })
   return router
 }

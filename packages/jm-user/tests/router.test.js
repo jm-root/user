@@ -14,7 +14,7 @@ let user = {
     },
     o1: 456,
     aa: [1, 2],
-    ao: [{a: 1}, {b: 1}]
+    ao: [{ a: 1 }, { b: 1 }]
   }
 }
 let ext = {
@@ -28,7 +28,7 @@ let ext = {
     n: 1
   },
   aa: [1, 3],
-  ao: [{a: 2}, {c: 1}]
+  ao: [{ a: 2 }, { c: 1 }]
 }
 
 let router = null
@@ -40,7 +40,7 @@ beforeAll(async () => {
 })
 
 let init = async function () {
-  let doc = await service.user.findOneAndRemove({account: user.account})
+  let doc = await service.user.findOneAndRemove({ account: user.account })
   return doc
 }
 
@@ -64,7 +64,7 @@ describe('router', () => {
 
   test('list', async () => {
     let doc = await prepare()
-    doc = await router.get('/users', {rows: 2})
+    doc = await router.get('/users', { rows: 2 })
     console.log(doc)
     expect(doc.page).toBeTruthy()
   })

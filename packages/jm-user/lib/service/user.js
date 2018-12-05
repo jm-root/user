@@ -34,13 +34,13 @@ module.exports = function (service, opts = {}) {
 
   schema
     .post('save', function (doc) {
-      doc && (service.emit('user.update', {id: doc.id}))
+      doc && (service.emit('user.update', { id: doc.id }))
     })
     .post('remove', function (doc) {
-      doc && (service.emit('user.remove', {id: doc.id}))
+      doc && (service.emit('user.remove', { id: doc.id }))
     })
     .post('findOneAndRemove', function (doc) {
-      doc && (service.emit('user.remove', {id: doc.id}))
+      doc && (service.emit('user.remove', { id: doc.id }))
     })
     .post('update', function (doc) {
       if (!doc.result.nModified) return
@@ -48,12 +48,12 @@ module.exports = function (service, opts = {}) {
         .find(this._conditions)
         .then(function (docs) {
           docs.forEach(function (doc) {
-            service.emit('user.update', {id: doc.id})
+            service.emit('user.update', { id: doc.id })
           })
         })
     })
     .post('findOneAndUpdate', function (doc) {
-      doc && (service.emit('user.update', {id: doc.id}))
+      doc && (service.emit('user.update', { id: doc.id }))
     })
 
   let model = jm.dao({
@@ -64,7 +64,7 @@ module.exports = function (service, opts = {}) {
     schema: schema,
     schemaExt: opts.schemaExt
   })
-  event.enableEvent(model, {force: true, clean: true})
+  event.enableEvent(model, { force: true, clean: true })
 
   return model
 }

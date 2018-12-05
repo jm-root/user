@@ -8,7 +8,7 @@ module.exports = function (service, opts = {}) {
     save: function (id, imageData) {
       let file = root + prefix + '/' + id + '.img'
       let base64Data = imageData.replace(/^data:image\/\w+;base64,/, '')
-      let dataBuffer = new Buffer(base64Data, 'base64')
+      let dataBuffer = Buffer.from(base64Data, 'base64')
       return new Promise(function (resolve, reject) {
         fse.ensureFile(file, function (err) {
           if (err) throw err

@@ -14,7 +14,7 @@ let user = {
     },
     o1: 456,
     aa: [1, 2],
-    ao: [{a: 1}, {b: 1}]
+    ao: [{ a: 1 }, { b: 1 }]
   }
 }
 let ext = {
@@ -28,7 +28,7 @@ let ext = {
     n: 1
   },
   aa: [1, 3],
-  ao: [{a: 2}, {c: 1}]
+  ao: [{ a: 2 }, { c: 1 }]
 }
 
 let service = null
@@ -38,7 +38,7 @@ beforeAll(async () => {
 })
 
 let init = async function () {
-  let doc = await service.user.findOneAndRemove({account: user.account})
+  let doc = await service.user.findOneAndRemove({ account: user.account })
   return doc
 }
 
@@ -65,7 +65,7 @@ describe('service', () => {
   test('findOneAndUpdate', async () => {
     await init()
     let doc = await service.signup(user)
-    doc = await service.user.findOneAndUpdate({account: user.account}, {nick: 'jeff234'})
+    doc = await service.user.findOneAndUpdate({ account: user.account }, { nick: 'jeff234' })
     expect(doc).toBeTruthy()
   })
 
@@ -115,7 +115,7 @@ describe('service', () => {
     await prepare()
     let doc = await service.findUser(user.account)
     expect(doc.account === user.account).toBeTruthy()
-    doc = await service.updateUser(doc.id, {password: '123', gender: 1})
+    doc = await service.updateUser(doc.id, { password: '123', gender: 1 })
     expect(doc).toBeTruthy()
   })
 
@@ -151,7 +151,7 @@ describe('service', () => {
     let doc = await service.findUser(user.account)
     expect(doc.account === user.account).toBeTruthy()
     let id = doc.id
-    doc = await service.updateUser(doc.id, {password: '123'})
+    doc = await service.updateUser(doc.id, { password: '123' })
     doc = await service.updatePassword(id, user.password, '1234')
     expect(doc && !doc.err).toBeTruthy()
     doc = await service.signon(user.account, '1234')
@@ -161,7 +161,7 @@ describe('service', () => {
   test('signon', async () => {
     await prepare()
     let doc = await service.findUser(user.account)
-    doc = await service.updateUser(doc.id, {password: '123'})
+    doc = await service.updateUser(doc.id, { password: '123' })
     doc = await service.signon(user.account, user.password)
     expect(doc && doc.id).toBeTruthy()
   })
