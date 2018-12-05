@@ -50,7 +50,7 @@ let prepare = async function () {
   return doc
 }
 
-describe('service', () => {
+describe('router', () => {
   test('exists', async () => {
     let doc = await prepare()
     doc = await router.get(`/users/${doc.id}/exists`)

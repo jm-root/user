@@ -115,7 +115,7 @@ describe('service', () => {
     await prepare()
     let doc = await service.findUser(user.account)
     expect(doc.account === user.account).toBeTruthy()
-    doc = await service.updateUser(doc.id, {password: '123', gender: 'man'})
+    doc = await service.updateUser(doc.id, {password: '123', gender: 1})
     expect(doc).toBeTruthy()
   })
 

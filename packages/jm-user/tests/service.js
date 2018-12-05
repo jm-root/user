@@ -1,5 +1,5 @@
-process.env.NODE_CONFIG_DIR = __dirname + '/../config'
-const config = require('../config')
+process.env.NODE_CONFIG_DIR = __dirname + '/../../../config'
+const config = require('../../../config')
 const $ = require('../lib')
 
 let service = $(config)
