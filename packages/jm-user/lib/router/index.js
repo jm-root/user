@@ -107,7 +107,11 @@ module.exports = function (opts = {}) {
     .add('/users', 'get', async opts => {
       // search
       let search = opts.data.search
-      if (!search) return
+      if (!search) {
+        const { conditions } = opts.data
+        conditions && (opts.conditions = conditions)
+        return
+      }
       let ary = []
       // 格式化特殊字符
       search = search.replace(/([`~!@#\$%\^\&\*\(\)_\+<>\?:"\{\},\.\\\/;'\[\]])/g, '\\$1') // eslint-disable-line
