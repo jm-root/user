@@ -108,7 +108,10 @@ module.exports = function (opts = {}) {
       // search
       let search = opts.data.search
       if (!search) {
-        const { conditions } = opts.data
+        let { conditions } = opts.data
+        if (typeof conditions === 'string') {
+          conditions = JSON.parse(conditions)
+        }
         conditions && (opts.conditions = conditions)
         return
       }
