@@ -6,3 +6,5 @@ src
 bench
 docs
 avatar
+logs
+tests
