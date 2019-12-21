@@ -40,13 +40,16 @@ beforeAll(async () => {
 })
 
 let init = async function () {
-  let doc = await service.user.findOneAndRemove({ account: user.account })
-  return doc
+  const { backend: { router } } = service
+  const doc = await service.findUser(user.account)
+  if (!doc) return
+  await router.delete(`/${doc.id}`)
 }
 
 let prepare = async function () {
   await init()
   let doc = await service.signup(user)
+  user.id = doc.id
   return doc
 }
 

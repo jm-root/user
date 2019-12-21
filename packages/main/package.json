@@ -1,0 +1,29 @@
+{
+  "name": "main",
+  "version": "1.0.0",
+  "description": "general acl service",
+  "main": "./lib/index",
+  "scripts": {
+    "test": "jest"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/jm-root/acl/tree/master/packages/main.git"
+  },
+  "keywords": [
+    "javascript",
+    "acl"
+  ],
+  "author": {
+    "name": "Jeff YU"
+  },
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/jm-root/acl/issues"
+  },
+  "homepage": "https://github.com/jm-root/acl",
+  "dependencies": {},
+  "jest": {
+    "testEnvironment": "node"
+  }
+}

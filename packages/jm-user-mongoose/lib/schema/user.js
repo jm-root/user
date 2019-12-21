@@ -2,7 +2,7 @@ const mongoose = require('mongoose')
 
 let Schema = mongoose.Schema
 
-let schemaDefine = {
+const schemaDefine = {
   uid: { type: Number, unique: true, sparse: true, index: true }, // 用户ID号
   account: { type: String, unique: true, sparse: true, index: true }, // 帐户
   email: { type: String, unique: true, sparse: true, index: true }, // 邮箱

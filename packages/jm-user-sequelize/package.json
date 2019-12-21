@@ -1,7 +1,7 @@
 {
-  "name": "jm-user",
-  "version": "2.0.3",
-  "description": "general user service",
+  "name": "jm-user-sequelize",
+  "version": "0.0.1",
+  "description": "sequelize adapter form jm-user",
   "main": "./lib/index",
   "scripts": {
     "test": "jest"
@@ -23,11 +23,11 @@
   },
   "homepage": "https://github.com/jm-root/user",
   "dependencies": {
-    "fs-extra": "^3.0.1",
-    "jm-dao": "^1.0.5",
-    "jm-user-mongoose": "^0.0.1",
-    "jm-utils": "^1.0.3",
-    "validator": "^7.1.0"
+    "bson": "^4.0.2",
+    "cls-hooked": "^4.2.2",
+    "jm-ms-sequelize": "^1.0.9",
+    "mysql2": "^1.6.5",
+    "sequelize": "^5.8.12"
   },
   "devDependencies": {},
   "jest": {

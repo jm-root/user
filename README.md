@@ -12,9 +12,7 @@ secret [''] 密钥
 
 sequence_user_id ['userId'] uid序列名称
 
-model_name ['user'] model名称
-
-table_name [''] 表名称, 默认同modelName
+table_name [''] 表名称, 默认 user
 
 table_name_prefix [''] 表名称前缀
 

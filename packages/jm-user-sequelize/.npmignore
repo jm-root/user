@@ -1,0 +1,10 @@
+.git
+.idea
+.svn
+examples
+src
+bench
+docs
+avatar
+logs
+tests

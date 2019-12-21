@@ -1,0 +1,11 @@
+{
+  "name": "router",
+  "version": "0.0.1",
+  "main": "./lib/index",
+  "dependencies": {
+    "jm-ms-wrapper": "^1.0.1"
+  },
+  "jest": {
+    "testEnvironment": "node"
+  }
+}

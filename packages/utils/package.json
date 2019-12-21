@@ -1,0 +1,11 @@
+{
+  "name": "utils",
+  "version": "0.0.1",
+  "main": "./lib/index",
+  "dependencies": {
+    "bson": "^4.0.2"
+  },
+  "jest": {
+    "testEnvironment": "node"
+  }
+}

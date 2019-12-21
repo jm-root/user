@@ -1,5 +1,5 @@
 const config = require('../../../config')
 const $ = require('../lib')
 
-const service = new $(config)
+const service = $(config)
 module.exports = service

@@ -1,8 +1,6 @@
 let BaseErrCode = 2600
 
 module.exports = {
-  SequenceUserId: 'userId',
-
   Mode: {
     merge: 0,
     replace: 1,

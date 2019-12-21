@@ -1,7 +1,9 @@
 module.exports = {
+  lng: 'zh_CN',
+  service_name: 'user',
   modules: {
     user: {
-      module: 'jm-user'
+      module: 'main'
     },
     'jm-user-mq': {}
   }

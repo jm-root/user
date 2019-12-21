@@ -1,29 +1,36 @@
 const _ = require('lodash')
 const validator = require('validator')
 const bson = require('bson')
-const jm = require('jm-dao')
 const event = require('jm-event')
 const error = require('jm-err')
 const log = require('jm-log4js')
 const crypto = require('crypto')
+const { utils } = require('jm-utils')
+
 const consts = require('../consts')
 const logger = log.getLogger('user')
 const t = require('../locale')
-const user = require('./user')
 const avatar = require('./avatar')
+const BackendMongoose = require('jm-user-mongoose')
+const BackendSequelize = require('jm-user-sequelize')
 
-let Err = consts.Err
-let Mode = consts.Mode
+const { Err, Mode } = consts
 
-let isMobile = function (mobile) {
-  let pattern = /^1[3,4,5,7,8]{1}[0-9]{9}$/
+function isMobile (mobile) {
+  let pattern = /^[1][3,4,5,7,8,9][0-9]{9}$/
   return pattern.test(mobile)
 }
 
-let hash = function (key) {
+function hash (key) {
   let sha256 = crypto.createHash('sha256')
   sha256.update(key)
   return sha256.digest('hex')
+}
+
+function validate ({ account, email, mobile }) {
+  if (account && !isNaN(account)) throw error.err(Err.FA_INVALID_ACCOUNT)
+  if (email && !validator.isEmail(email)) throw error.err(Err.FA_INVALID_EMAIL)
+  if (mobile && !isMobile(mobile)) throw error.err(Err.FA_INVALID_MOBILE)
 }
 
 /**
@@ -46,49 +53,44 @@ let hash = function (key) {
 
 class Service {
   constructor (opts = {}) {
-    event.enableEvent(this)
-    this.ready = false
-    this.hash = hash
-    this.t = t
-    this.Mode = Mode
-    this.secret = opts.secret || ''
+    const {
+      debug,
+      db,
+      secret = ''
+    } = opts
 
-    const onConnected = () => {
-      this.emit('ready')
-      logger.info('db connected. ready.')
-    }
-    const onDisconnected = () => {
-      this.ready = false
-      this.onReady()
-      logger.info('db disconnected. not ready.')
-    }
+    Object.assign(this, {
+      secret,
+      ready: false,
+      hash,
+      t,
+      Mode,
+      avatar: avatar(this, opts)
+    })
 
-    let cb = db => {
-      db.on('connected', onConnected)
-      db.on('disconnected', onDisconnected)
+    debug && (logger.setLevel('debug'))
 
-      this.db = db
-      this.sq = jm.sequence({ db })
-      this.user = user(this, opts)
-      this.avatar = avatar(this, opts)
-      onConnected()
-    }
-
-    const db = opts.db
-    let p = null
-    if (!db) {
-      p = jm.db.connect()
-    } else if (typeof db === 'string') {
-      p = jm.db.connect(db)
-    }
-    p
-      .then(cb)
-      .catch(e => {
-        logger.error(e)
-        process.exit(Err.FA_CONNECT_DB.err)
-      })
-
+    event.enableEvent(this, { async: true })
     this.onReady()
+
+    if (!db) {
+      logger.error('no db config!')
+      process.exit()
+    }
+    const dbtype = utils.getUriProtocol(db)
+    if (!dbtype) {
+      logger.error('database type not found!')
+      process.exit()
+    }
+    if (dbtype === 'mongodb') {
+      this.backend = new BackendMongoose(opts)
+    } else {
+      this.backend = new BackendSequelize(opts)
+    }
+
+    this.backend.onReady().then(() => {
+      this.emit('ready')
+    })
   }
 
   async onReady () {
@@ -139,37 +141,23 @@ class Service {
     return passwordEncrypted.password === hash(password + passwordEncrypted.salt)
   }
 
-  validate (opts) {
-    return Promise.resolve()
-      .then(function () {
-        if (opts.account && !isNaN(opts.account)) throw error.err(Err.FA_INVALID_ACCOUNT)
-        if (opts.email && !validator.isEmail(opts.email)) throw error.err(Err.FA_INVALID_EMAIL)
-        if (opts.mobile && !isMobile(opts.mobile)) throw error.err(Err.FA_INVALID_MOBILE)
-        return null
-      })
-  }
-
   /**
    * 更新用户信息
    * @param {string} id
    * @param {Object} opts
-   * @param cb
    */
-  updateUser (id, opts, cb) {
-    let self = this
-    let c = { _id: id }
+  async updateUser (id, opts) {
+    validate(opts)
 
-    if (opts.password && !opts.salt) {
-      let o = this.encryptPassword(opts.password)
-      opts.password = o.password
-      opts.salt = o.salt
+    const { backend: { router } } = this
+    const { password, salt } = opts
+
+    if (password && !salt) {
+      const o = this.encryptPassword(password)
+      Object.assign(opts, o)
     }
 
-    opts.moditime = Date.now()
-    return this.validate(opts)
-      .then(function () {
-        return self.user.update(c, opts, cb)
-      })
+    return router.put(`/${id}`, opts)
   }
 
   /**
@@ -177,116 +165,64 @@ class Service {
    * @param id
    * @param opts
    * @param mode 参考service.Mode
-   * @param cb
    */
-  updateUserExt (id, opts, mode, cb) {
-    if (typeof mode === 'function') {
-      cb = mode
-      mode = Mode.merge
+  async updateUserExt (id, opts, mode = Mode.merge) {
+    const { backend: { router } } = this
+    const doc = await router.get(`/${id}`)
+    if (!doc) throw error.err(Err.FA_USER_NOT_EXIST)
+    doc.ext || (doc.ext = {})
+    if (mode === Mode.replace) {
+      doc.ext = opts
+    } else if (mode === Mode.assign) {
+      Object.assign(doc.ext, opts)
+    } else {
+      doc.ext = _.merge(doc.ext, opts)
     }
-
-    if (cb) {
-      this.updateUserExt(id, opts, mode)
-        .then(function (doc) {
-          cb(null, doc)
-        })
-        .catch(function (err) {
-          cb(err)
-        })
-      return this
-    }
-
-    return this.user.findById(id)
-      .then(function (doc) {
-        if (!doc) throw error.err(Err.FA_USER_NOT_EXIST)
-        !doc.ext && (doc.ext = {})
-        let ext = doc.ext
-        if (mode === Mode.replace) {
-          doc.ext = opts
-        } else if (mode === Mode.assign) {
-          doc.ext = Object.assign({}, ext, opts)
-        } else {
-          doc.ext = _.merge(doc.ext, opts)
-        }
-        doc.moditime = Date.now()
-        doc.markModified('ext')
-        return doc.save()
-      })
+    return this.updateUser(id, { ext: doc.ext })
   }
 
   /**
    * 修改密码
    * @param oldPassword
    * @param password
-   * @param cb
    */
-  updatePassword (id, oldPassword, password, cb) {
-    if (cb) {
-      this.updatePassword(id, oldPassword, password)
-        .then(function (doc) {
-          cb(null, doc)
-        })
-        .catch(function (err) {
-          cb(err)
-        })
-      return this
+  async updatePassword (id, oldPassword, password) {
+    const doc = await this.findUser(id)
+    if (!doc) throw error.err(Err.FA_USER_NOT_EXIST)
+    if (!this.checkPassword(doc, oldPassword)) {
+      throw error.err(Err.FA_INVALID_PASSWD)
     }
-
-    let self = this
-    return this.user.findById(id)
-      .then(function (doc) {
-        if (!doc) throw error.err(Err.FA_USER_NOT_EXIST)
-
-        if (!self.checkPassword(doc, oldPassword)) {
-          throw error.err(Err.FA_INVALID_PASSWD)
-        }
-
-        let o = {
-          password: password
-        }
-        return self.updateUser(id, o, cb)
-      })
+    return this.updateUser(id, { password })
   }
 
   /**
-   * 查找一个用户
-   * @param {*} username 查找项
-   * @param cb
+   * 查找一个用户, 需要返回完整数据，包括password和salt
+   * @param {*} q 查找项
    */
-  findUser (username, cb) {
-    let query = []
-    if (typeof username === 'number' || validator.isInt(username)) {
-      if (isMobile(username)) {
-        query.push({
-          mobile: username
-        })
+  async findUser (q) {
+    const { backend: { router } } = this
+    let query = {}
+    if (typeof q === 'number' || validator.isInt(q)) {
+      if (isMobile(q)) {
+        query.mobile = q
       } else {
-        query.push({
-          uid: username
-        })
+        query.uid = q
       }
-    } else if (validator.isEmail(username)) {
-      query.push({
-        email: username
-      })
-    } else if (bson.ObjectId.isValid(username)) {
-      query.push({
-        _id: username
-      })
+    } else if (validator.isEmail(q)) {
+      query.email = q
+    } else if (bson.ObjectId.isValid(q)) {
+      query.id = q
     } else {
-      query.push({
-        account: username
-      })
+      query.account = q
     }
 
-    return this.user.findOne({ '$or': query }, cb)
+    return router.get(`/findone`, query)
   }
 
   /**
    * 登陆
    * @param {String|number|*} username
    * @param {String} password
-   * @param cb
    */
   async signon (username, password) {
     let doc = await this.findUser(username)
@@ -305,71 +241,34 @@ class Service {
       *     password: '123'
       * })
    * @param {Object} opts - 参数
-   * @param {Function} cb - callback
    * @return {Promise}
    */
-  signup (opts, cb) {
-    let self = this
-    if (cb) {
-      this.signup(opts)
-        .then(function (doc) {
-          cb(null, doc)
-        })
-        .catch(function (err) {
-          cb(err)
-        })
-      return this
-    }
-    let data = {}
-    _.defaults(data, opts)
-    if (data.password && !data.salt) {
-      let p = this.encryptPassword(data.password)
-      data.password = p.password
-      data.salt = p.salt
+  async signup (opts) {
+    const { backend: { router } } = this
+    const data = Object.assign({}, opts)
+    const { password, salt, id, mobile, uid, account, email } = data
+    if (password && !salt) {
+      const p = this.encryptPassword(password)
+      Object.assign(data, p)
     }
 
-    let query = []
-    if (data.mobile) {
-      query.push({
-        mobile: data.mobile
-      })
+    const query = {}
+    id && (query.id = id)
+    mobile && (query.mobile = mobile)
+    uid && (query.uid = uid)
+    account && (query.account = account)
+    email && (query.email = email)
+
+    validate(data)
+
+    if (Object.keys(query).length) {
+      const doc = await router.get(`/findone`, query)
+      if (doc) throw error.err(Err.FA_USER_EXIST)
     }
-    if (data.uid) {
-      query.push({
-        uid: data.uid
-      })
-    }
-    if (data.account) {
-      query.push({
-        account: data.account
-      })
-    }
-    if (data.email) {
-      query.push({
-        email: data.email
-      })
-    }
-    // 允许游客注册
-    if (!query.length) {
-      return self.user
-        .create(data)
-        .then(function (doc) {
-          self.emit('signup', { id: doc.id })
-          return doc
-        })
-    }
-    return this.validate(data)
-      .then(function () {
-        return self.user.findOne({ '$or': query })
-      })
-      .then(function (doc) {
-        if (doc) return Promise.reject(error.err(Err.FA_USER_EXIST))
-        return self.user.create(data)
-      })
-      .then(function (doc) {
-        self.emit('signup', { id: doc.id })
-        return doc
-      })
+
+    const doc = await router.post('/', data)
+    this.emit('signup', { id: doc.id })
+    return doc
   }
 }
 

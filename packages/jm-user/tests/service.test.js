@@ -38,13 +38,15 @@ beforeAll(async () => {
 })
 
 let init = async function () {
-  let doc = await service.user.findOneAndRemove({ account: user.account })
-  return doc
+  const { backend: { router } } = service
+  const doc = await service.findUser(user.account)
+  if (doc) await router.delete(`/${doc.id}`)
 }
 
 let prepare = async function () {
   await init()
   let doc = await service.signup(user)
+  user.id = doc.id
   return doc
 }
 
@@ -62,33 +64,21 @@ describe('service', () => {
     expect(!service.checkPassword(null, '')).toBeTruthy()
   })
 
-  test('findOneAndUpdate', async () => {
-    await init()
-    let doc = await service.signup(user)
-    doc = await service.user.findOneAndUpdate({ account: user.account }, { nick: 'jeff234' })
-    expect(doc).toBeTruthy()
-  })
-
-  test('create user', async () => {
-    await init()
-    let doc = await service.user.create(user)
-    expect(doc.id).toBeTruthy()
-    try {
-      doc = await service.user.create(user)
-    } catch (e) {
-      expect(e).toBeTruthy()
-    }
-  })
-
   test('signup', async () => {
     await init()
     let doc = await service.signup(user)
-    expect(doc !== null).toBeTruthy()
+    expect(doc).toBeTruthy()
     try {
       doc = await service.signup(user)
     } catch (e) {
       expect(e).toBeTruthy()
     }
+  })
+
+  test('findUser id', async () => {
+    await prepare()
+    const doc = await service.findUser(user.id)
+    expect(doc.id === user.id).toBeTruthy()
   })
 
   test('findUser account', async () => {
