@@ -37,6 +37,10 @@ beforeAll(async () => {
   service = $
 })
 
+afterAll(async () => {
+  await init()
+})
+
 let init = async function () {
   const { backend: { router } } = service
   const doc = await service.findUser(user.account)

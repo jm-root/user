@@ -26,8 +26,8 @@
     "bson": "^4.0.2",
     "cls-hooked": "^4.2.2",
     "jm-ms-sequelize": "^1.0.9",
-    "mysql2": "^1.6.5",
-    "sequelize": "^5.8.12"
+    "mysql2": "^2.1.0",
+    "sequelize": "^5.21.3"
   },
   "devDependencies": {},
   "jest": {

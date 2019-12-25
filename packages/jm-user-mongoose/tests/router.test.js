@@ -26,6 +26,10 @@ beforeAll(async () => {
   router = $.router
 })
 
+afterAll(async () => {
+  await init()
+})
+
 let init = async function () {
   let doc = await service.user.findOneAndRemove({ account: user.account })
   return doc
