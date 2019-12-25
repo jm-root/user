@@ -31,8 +31,10 @@
   "dependencies": {
     "config": "^3.2.4",
     "jm-err": "^1.0.7",
+    "jm-log4js": "^2.0.4",
     "jm-server": "^2.0.9",
-    "jm-server-jaeger": "^0.0.2"
+    "jm-server-jaeger": "^0.0.2",
+    "log4js": "^6.1.0"
   },
   "devDependencies": {
     "husky": "^1.2.0",
