@@ -210,7 +210,7 @@ class Service {
       }
     } else if (validator.isEmail(q)) {
       query.email = q
-    } else if (bson.ObjectId.isValid(q)) {
+    } else if (bson.ObjectId.isValid(q) && q.length===24) {
       query.id = q
     } else {
       query.account = q
