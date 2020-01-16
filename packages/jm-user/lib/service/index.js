@@ -269,7 +269,7 @@ class Service {
       query.push({
         email: username
       })
-    } else if (bson.ObjectId.isValid(username)) {
+    } else if (bson.ObjectId.isValid(username) && username.length===24) {
       query.push({
         _id: username
       })
