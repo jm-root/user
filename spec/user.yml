@@ -20,14 +20,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/UserInfo'
+              $ref: '#/components/schemas/User'
       responses:
         '200':
           description: 更新成功
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/RetInfo'
+                $ref: '#/components/schemas/Ret'
     get:
       description: 获取用户信息
       parameters:
@@ -42,7 +42,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/UserInfo'
+                $ref: '#/components/schemas/User'
   /users/{id}/password:
     post:
       description: 修改用户密码
@@ -56,17 +56,17 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/PasswordInfo'
+              $ref: '#/components/schemas/Password'
       responses:
         '200':
           description: 更新成功
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/RetInfo'
+                $ref: '#/components/schemas/Ret'
 components:
   schemas:
-    UserInfo:
+    User:
       type: object
       properties:
         nick:
@@ -75,7 +75,7 @@ components:
         ext:
           type: object
       description: 用户信息
-    PasswordInfo:
+    Password:
       type: object
       properties:
         oldPassword:
@@ -83,7 +83,7 @@ components:
         password:
           type: object
       description: 密码信息
-    RetInfo:
+    Ret:
       type: object
       properties:
         ret:

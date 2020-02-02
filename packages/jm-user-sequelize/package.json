@@ -1,7 +1,7 @@
 {
   "name": "jm-user-sequelize",
   "version": "0.0.1",
-  "description": "sequelize adapter form jm-user",
+  "description": "sequelize adapter for jm-user",
   "main": "./lib/index",
   "scripts": {
     "test": "jest"
