@@ -44,7 +44,6 @@ module.exports = function (service, opts = {}) {
 
       doc && (doc._id = doc.id)
 
-      console.log(doc, 2222222222)
       return doc
     })
     .add('/', 'get', async opts => {
@@ -66,7 +65,7 @@ module.exports = function (service, opts = {}) {
       q = q.replace(/([`~!@#\$%\^\&\*\(\)_\+<>\?:"\{\},\.\\\/;'\[\]])/g, '\\$1') // eslint-disable-line
       if (ObjectId.isValid(q)) {
         c.push({ id: q })
-        c.push({ name: { [Op.like]: `%${q}%` } })
+        c.push({ account: { [Op.like]: `%${q}%` } })
       } else if (!isNaN(q)) {
         c.push({ uid: Number(q) })
         c.push({ mobile: { [Op.like]: `%${q}%` } })

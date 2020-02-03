@@ -1,4 +1,4 @@
-const jm = require('jm-dao')
+const mongoose = require('mongoose')
 const event = require('jm-event')
 const log = require('jm-log4js')
 const logger = log.getLogger('user')
@@ -47,21 +47,28 @@ class Service {
       logger.info('db disconnected. not ready.')
     }
 
-    let cb = db => {
+    let cb = () => {
+      const db = mongoose.connection
       db.on('connected', onConnected)
       db.on('disconnected', onDisconnected)
 
       this.db = db
-      this.sq = jm.sequence({ db })
+      this.sq = require('jm-sequence-mongoose')()
       this.user = user(this, opts)
       onConnected()
     }
 
     let p = null
+    const _opts = {
+      useCreateIndex: true,
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+      useFindAndModify: false
+    }
     if (!db) {
-      p = jm.db.connect()
+      p = mongoose.connect(_opts)
     } else if (typeof db === 'string') {
-      p = jm.db.connect(db)
+      p = mongoose.connect(db, _opts)
     }
     p
       .then(cb)

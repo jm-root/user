@@ -24,8 +24,6 @@
   "homepage": "https://github.com/jm-root/user",
   "dependencies": {
     "fs-extra": "^3.0.1",
-    "jm-dao": "^1.0.5",
-    "jm-user-mongoose": "^0.0.1",
     "jm-utils": "^1.0.3",
     "validator": "^7.1.0"
   },

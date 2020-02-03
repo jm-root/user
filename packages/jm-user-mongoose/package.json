@@ -23,8 +23,9 @@
   },
   "homepage": "https://github.com/jm-root/user",
   "dependencies": {
-    "jm-dao": "^1.0.5",
-    "jm-ms-mongoose": "^1.0.0"
+    "mongoose": "^5.8.11",
+    "jm-ms-mongoose": "^2.0.1",
+    "jm-sequence-mongoose": "^0.0.1"
   },
   "devDependencies": {},
   "jest": {

@@ -44,8 +44,6 @@ module.exports = function (sequelize, DataTypes) {
       deletedAt: 'deltime'
     })
 
-  // model.belongsTo(model, { as: 'creator', constraints: false })
-
   plusModelHook(model)
 
   return model

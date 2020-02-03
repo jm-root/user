@@ -1,9 +1,7 @@
-const jm = require('jm-dao')
+const mongoose = require('mongoose')
 const event = require('jm-event')
 const _schema = require('../schema/user')
 const consts = require('../consts')
-
-let Err = consts.Err
 
 module.exports = function (service, opts = {}) {
   const modelName = 'user'
@@ -17,26 +15,18 @@ module.exports = function (service, opts = {}) {
 
   let sq = service.sq
   let schema = opts.schema || _schema()
+  schemaExt && (schema.add(schemaExt))
+
   if (!disableAutoUid) {
-    schema.pre('save', function (next) {
+    schema.pre('save', async function (next) {
       let self = this
       if (self.uid !== undefined) return next()
-      schema.createUid(function (err, val) {
-        if (err) {
-          return next(err)
-        }
-        self.uid = val
-        next()
-      })
+      self.uid = await schema.createUid()
+      next()
     })
 
-    schema.createUid = function (cb) {
-      sq.next(sequenceUserId, {}, function (err, val) {
-        if (err) {
-          return cb(err, Err.FA_CREATE_USER_UID)
-        }
-        cb(null, val)
-      })
+    schema.createUid = async function () {
+      return sq.next(sequenceUserId)
     }
   }
 
@@ -64,14 +54,7 @@ module.exports = function (service, opts = {}) {
       doc && (service.emit(`${modelName}.update`, { id: doc.id }))
     })
 
-  let model = jm.dao({
-    db: service.db,
-    modelName,
-    tableName,
-    prefix,
-    schema,
-    schemaExt
-  })
+  const model = mongoose.model(modelName, schema, `${prefix}${tableName || modelName}`)
   event.enableEvent(model, { force: true, clean: true })
 
   return model
