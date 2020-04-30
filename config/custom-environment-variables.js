@@ -8,6 +8,7 @@ module.exports = {
   avatar_dir: 'avatar_dir',
   table_name_prefix: 'table_name_prefix',
   service_name: 'service_name',
+  hash: 'hash',
   modules: {
     'jm-server-jaeger': {
       config: {

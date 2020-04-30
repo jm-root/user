@@ -3,7 +3,7 @@ const validator = require('validator')
 const bson = require('bson')
 const error = require('jm-err')
 const log = require('jm-log4js')
-const crypto = require('crypto')
+const { hasher } = require('jm-hasher')
 const { utils } = require('jm-utils')
 const { Service } = require('jm-server')
 
@@ -21,12 +21,6 @@ function isMobile (mobile) {
   return pattern.test(mobile)
 }
 
-function hash (key) {
-  let sha256 = crypto.createHash('sha256')
-  sha256.update(key)
-  return sha256.digest('hex')
-}
-
 function validate ({ account, email, mobile }) {
   if (account && !isNaN(account)) throw error.err(Err.FA_INVALID_ACCOUNT)
   if (email && !validator.isEmail(email)) throw error.err(Err.FA_INVALID_EMAIL)
@@ -40,6 +34,7 @@ function validate ({ account, email, mobile }) {
  * opts参数:{
  *  db: 数据库
  *  secret: (可选, 密钥, 用于加密明文密码, 默认'')
+ *  hash: (可选, 密码哈希算法, 支持sha256, md5, sm3, 默认'sha256')
  *  model_name: 模型名称(可选，默认'user')
  *  table_name: (可选, 表名, 默认等于modelName)
  *  table_name_prefix: (可选, 表名前缀, 默认为'')
@@ -57,12 +52,13 @@ module.exports = class extends Service {
     const {
       debug,
       db,
-      secret = ''
+      secret = '',
+      hash = 'sha256'
     } = opts
 
     Object.assign(this, {
       secret,
-      hash,
+      hash: hasher[hash],
       t,
       Mode,
       avatar: avatar(this, opts)
@@ -98,7 +94,7 @@ module.exports = class extends Service {
 
   createKey (key = '') {
     key += this.secret + Math.random() + Date.now().toString()
-    return hash(key)
+    return this.hash(key)
   }
 
   /**
@@ -114,7 +110,7 @@ module.exports = class extends Service {
   encryptPassword (password) {
     if (!password) return null
     let salt = this.createKey('')
-    password = hash(password + salt)
+    password = this.hash(password + salt)
     return { password, salt }
   }
 
@@ -131,7 +127,7 @@ module.exports = class extends Service {
    */
   checkPassword (passwordEncrypted, password) {
     if (!passwordEncrypted || !password) return false
-    return passwordEncrypted.password === hash(password + passwordEncrypted.salt)
+    return passwordEncrypted.password === this.hash(password + passwordEncrypted.salt)
   }
 
   /**

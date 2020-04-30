@@ -22,6 +22,8 @@ db [] mongodb服务器Uri
 
 secret [''] 密钥
 
+hash ['sha256'] 密码哈希算法, 支持sha256, md5, sm3
+
 sequence_user_id ['userId'] uid序列名称
 
 model_name ['user'] model名称
