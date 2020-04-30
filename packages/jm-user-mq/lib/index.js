@@ -24,22 +24,13 @@ class $ extends Service {
       this.emit('ready')
     })
 
-    user
-      .on('signon', opts => {
-        opts && (this.send('user.signon', opts))
+    const events = ['signon', 'singup', 'create', 'update', 'delete', 'status']
+    events.forEach(key => {
+      key = `user.${key}`
+      user.on(key, opts => {
+        opts && (this.send(key, opts))
       })
-      .on('singup', opts => {
-        opts && (this.send('user.singup', opts))
-      })
-      .on('user.status', opts => {
-        opts && (this.send('user.status', opts))
-      })
-      .on('user.update', opts => {
-        opts && (this.send('user.update', opts))
-      })
-      .on('user.remove', opts => {
-        opts && (this.send('user.remove', opts))
-      })
+    })
   }
 
   async send (topic, message) {

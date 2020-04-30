@@ -88,6 +88,12 @@ module.exports = class extends Service {
     this.backend.onReady().then(() => {
       this.emit('ready')
     })
+
+    const events = ['create', 'update', 'delete', 'status']
+    events.forEach(key => {
+      key = `user.${key}`
+      this.backend.on(key, opts => { this.emit(key, opts) })
+    })
   }
 
   createKey (key = '') {
@@ -216,7 +222,7 @@ module.exports = class extends Service {
     if (!doc) throw error.err(Err.FA_USER_NOT_EXIST)
     if (!doc.active) throw error.err(Err.FA_ACCOUNT_BAN)
     if (!this.checkPassword(doc, password)) throw error.err(Err.FA_INVALID_PASSWD)
-    this.emit('signon', { id: doc.id })
+    this.emit('user.signon', { id: doc.id })
     return { id: doc.id }
   }
 
@@ -254,7 +260,7 @@ module.exports = class extends Service {
     }
 
     const doc = await router.post('/', data)
-    this.emit('signup', { id: doc.id })
+    this.emit('user.signup', { id: doc.id })
     return doc
   }
 }
