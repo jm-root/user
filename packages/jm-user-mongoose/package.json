@@ -24,8 +24,8 @@
   "homepage": "https://github.com/jm-root/user",
   "dependencies": {
     "mongoose": "^5.8.11",
-    "jm-ms-mongoose": "^2.0.1",
-    "jm-sequence-mongoose": "^0.0.1"
+    "jm-ms-mongoose": "^2.0.2",
+    "jm-sequence-mongoose": "^0.0.2"
   },
   "devDependencies": {},
   "jest": {

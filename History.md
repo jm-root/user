@@ -1,5 +1,8 @@
 # History
 
+## 2.1.0 / 2020-04-30
+- support mysql and mongodb
+
 ## 2.0.3 / 2018-12-25
 - jm-server@2.x
 

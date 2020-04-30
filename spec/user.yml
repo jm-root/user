@@ -1,6 +1,7 @@
 openapi: 3.0.0
 # Added by API Auto Mocking Plugin
 servers:
+  - url: http://gateway.l.jamma.cn/user
   - url: http://api.jamma.cn/user
 info:
   version: "2.0.0"
