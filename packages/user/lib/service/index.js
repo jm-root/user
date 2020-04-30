@@ -4,7 +4,7 @@ module.exports = class extends require('jm-user') {
   }
 
   router (opts) {
-    const dir = require('path').join(__dirname, '../router')
-    return new (require('router'))(this, { dir, ...opts }).router
+    const dir = `${__dirname}/../router`
+    return this.loadRouter(dir, opts)
   }
 }
