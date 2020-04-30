@@ -1,5 +1,5 @@
 const mongoose = require('mongoose')
-const event = require('jm-event')
+const { Service } = require('jm-server')
 const log = require('jm-log4js')
 const logger = log.getLogger('user')
 const user = require('./user')
@@ -20,10 +20,9 @@ const user = require('./user')
  * }
  * @return {Object} service
  */
-class Service {
+module.exports = class extends Service {
   constructor (opts = {}) {
-    event.enableEvent(this, { async: true })
-    this.onReady()
+    super(opts)
 
     const {
       debug,
@@ -31,7 +30,6 @@ class Service {
     } = opts
 
     Object.assign(this, {
-      ready: false,
       router: require('../router')(this)
     })
 
@@ -77,16 +75,4 @@ class Service {
         process.exit()
       })
   }
-
-  async onReady () {
-    if (this.ready) return
-    return new Promise(resolve => {
-      this.once('ready', () => {
-        this.ready = true
-        resolve()
-      })
-    })
-  }
 }
-
-module.exports = Service

@@ -1,11 +1,11 @@
 const _ = require('lodash')
 const validator = require('validator')
 const bson = require('bson')
-const event = require('jm-event')
 const error = require('jm-err')
 const log = require('jm-log4js')
 const crypto = require('crypto')
 const { utils } = require('jm-utils')
+const { Service } = require('jm-server')
 
 const consts = require('../consts')
 const logger = log.getLogger('user')
@@ -51,8 +51,9 @@ function validate ({ account, email, mobile }) {
  * @return {Object} service
  */
 
-class Service {
+module.exports = class extends Service {
   constructor (opts = {}) {
+    super(opts)
     const {
       debug,
       db,
@@ -61,7 +62,6 @@ class Service {
 
     Object.assign(this, {
       secret,
-      ready: false,
       hash,
       t,
       Mode,
@@ -69,9 +69,6 @@ class Service {
     })
 
     debug && (logger.setLevel('debug'))
-
-    event.enableEvent(this, { async: true })
-    this.onReady()
 
     if (!db) {
       logger.error('no db config!')
@@ -90,16 +87,6 @@ class Service {
 
     this.backend.onReady().then(() => {
       this.emit('ready')
-    })
-  }
-
-  async onReady () {
-    if (this.ready) return
-    return new Promise(resolve => {
-      this.once('ready', () => {
-        this.ready = true
-        resolve()
-      })
     })
   }
 
@@ -271,5 +258,3 @@ class Service {
     return doc
   }
 }
-
-module.exports = Service

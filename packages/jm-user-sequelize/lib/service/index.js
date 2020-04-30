@@ -2,7 +2,7 @@ const fs = require('fs')
 const path = require('path')
 const DAO = require('./dao')
 const Associations = require('./associations')
-const event = require('jm-event')
+const { Service } = require('jm-server')
 const log = require('jm-log4js')
 const logger = log.getLogger('user')
 
@@ -22,18 +22,12 @@ const logger = log.getLogger('user')
  * }
  * @return {Object} service
  */
-class Service {
+module.exports = class extends Service {
   constructor (opts = {}) {
-    event.enableEvent(this, { async: true })
-    this.onReady()
-
+    super(opts)
     const {
       debug
     } = opts
-
-    Object.assign(this, {
-      ready: false
-    })
 
     debug && (logger.setLevel('debug'))
 
@@ -70,16 +64,4 @@ class Service {
         process.exit()
       })
   }
-
-  async onReady () {
-    if (this.ready) return
-    return new Promise(resolve => {
-      this.once('ready', () => {
-        this.ready = true
-        resolve()
-      })
-    })
-  }
 }
-
-module.exports = Service

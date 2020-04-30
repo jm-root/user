@@ -18,6 +18,4 @@ table_name_prefix [''] 表名称前缀
 
 disable_auto_uid [false] 禁用自动Uid生成
 
-gateway Gateway服务器Uri
-
-disable_mq [] 禁用MQ插件
+gateway Gateway服务器Uri, 如果配置了此参数，自动启用jm-user-mq

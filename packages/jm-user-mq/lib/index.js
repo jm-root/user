@@ -1,58 +1,60 @@
 const log = require('jm-log4js')
 const logger = log.getLogger('user')
-const MS = require('jm-ms')
+const { Service } = require('jm-server')
 
-let ms = new MS()
+class $ extends Service {
+  constructor (opts, app) {
+    super(opts)
+    const { gateway } = opts
+    const { user } = app.modules
 
-module.exports = function (opts, app) {
-  let o = {
-    ready: true,
-
-    onReady: function () {
-      return this.ready
+    if (!gateway) {
+      logger.warn('no gateway config. I will not work.')
+      return
     }
-  }
 
-  let bind = async (name, uri) => {
-    uri || (uri = '/' + name)
-    o[name] = await ms.client({
-      uri: opts.gateway + uri
+    if (!user) {
+      logger.warn('no user module found. I will not work.')
+      return
+    }
+
+    require('./gateway')({ gateway }).then(doc => {
+      doc.bind('mq')
+      this.gateway = doc
+      this.emit('ready')
     })
-  }
-  bind('mq')
 
-  if (!app.modules.user) {
-    logger.warn('no user module found. so I can not work.')
-    return o
-  }
-  if (!opts.gateway) {
-    logger.warn('no gateway config. so I can not work.')
-    return o
-  }
-
-  let user = app.modules.user
-
-  let send = async function (topic, message) {
-    return o.mq.post(`/${topic}`, { message })
-      .catch(e => {
-        logger.error(`send mq fail. topic: ${topic} message: ${JSON.stringify(message)}`)
-        logger.error(e)
+    user
+      .on('signon', opts => {
+        opts && (this.send('user.signon', opts))
+      })
+      .on('singup', opts => {
+        opts && (this.send('user.singup', opts))
+      })
+      .on('user.status', opts => {
+        opts && (this.send('user.status', opts))
+      })
+      .on('user.update', opts => {
+        opts && (this.send('user.update', opts))
+      })
+      .on('user.remove', opts => {
+        opts && (this.send('user.remove', opts))
       })
   }
-  user
-    .on('signon', function (opts) {
-      opts && (send('user.signon', opts))
-    })
-    .on('singup', function (opts) {
-      opts && (send('user.singup', opts))
-    })
-    .on('user.status', function (opts) {
-      opts && (send('user.status', opts))
-    })
-    .on('user.update', function (opts) {
-      opts && (send('user.update', opts))
-    })
-    .on('user.remove', function (opts) {
-      opts && (send('user.remove', opts))
-    })
+
+  async send (topic, message) {
+    await this.onReady()
+    const msg = `topic: ${topic} message: ${JSON.stringify(message)}`
+    try {
+      logger.debug(`send mq. ${msg}`)
+      await this.gateway.mq.post(`/${topic}`, { message })
+    } catch (e) {
+      logger.error(`send mq fail. ${msg}`)
+      logger.error(e)
+    }
+  }
+}
+
+module.exports = function (opts, app) {
+  return new $(opts, app)
 }

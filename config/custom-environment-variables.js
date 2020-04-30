@@ -7,13 +7,16 @@ module.exports = {
   avatar_prefix: 'avatar_prefix',
   avatar_dir: 'avatar_dir',
   table_name_prefix: 'table_name_prefix',
-  gateway: 'gateway',
-  disable_mq: 'disable_mq',
   service_name: 'service_name',
   modules: {
     'jm-server-jaeger': {
       config: {
         jaeger: 'jaeger'
+      }
+    },
+    'jm-user-mq': {
+      config: {
+        gateway: 'gateway'
       }
     }
   }
