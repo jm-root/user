@@ -1,9 +1,7 @@
 const mss = require('jm-ms-sequelize')
-const MS = require('jm-ms-core')
+const { ms } = require('jm-server')
 const { Op } = require('sequelize')
 const { ObjectId } = require('bson')
-
-const ms = new MS()
 module.exports = function (service, opts = {}) {
   let listOpts = opts.list || {
     order: [['moditime', 'DESC']],

@@ -1,9 +1,8 @@
 const msm = require('jm-ms-mongoose')
-const MS = require('jm-ms-core')
+const { ms } = require('jm-server')
 const mongoose = require('mongoose')
-
 const ObjectId = mongoose.Types.ObjectId
-const ms = new MS()
+
 module.exports = function (service, opts = {}) {
   let listOpts = opts.list || {
     conditions: {},

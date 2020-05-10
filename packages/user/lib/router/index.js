@@ -1,35 +1,64 @@
 const avatar = require('./avatar')
-const MS = require('jm-ms-core')
+const { ms } = require('jm-server')
 
-let ms = new MS()
 module.exports = function (service, opts = {}) {
-  let signon = async opts => {
-    return service.signon(opts.data.username, opts.data.password)
+  async function signon (opts) {
+    const { data: { username, password } } = opts
+    return service.signon(username, password)
   }
 
-  let signup = async opts => {
-    if (opts.ip) {
-      opts.data.ip = opts.ip
+  async function signup (opts) {
+    const { ip, data } = opts
+    if (ip) {
+      data.ip = ip
     }
-    let doc = await service.signup(opts.data)
+    let doc = await service.signup(data)
     return {
       id: doc.id,
       uid: doc.uid
     }
   }
 
-  let updateExt = async opts => {
-    let mode = service.Mode.merge
-    if (opts.params.extmode === 'ext') {
-    } else if (opts.params.extmode === 'extreplace') {
-      mode = service.Mode.replace
-    } else if (opts.params.extmode === 'extassign') {
-      mode = service.Mode.assign
+  async function exists (opts) {
+    const { params: { id } } = opts
+    const doc = await service.findUser(id)
+    if (doc) {
+      return { ret: doc.id }
+    } else {
+      return { ret: false }
+    }
+  }
+
+  async function updateUser (opts) {
+    const { params: { id }, data } = opts
+    await service.updateUser(id, data)
+    return { ret: true }
+  }
+
+  async function updatePassword (opts) {
+    const { params: { id }, data: { oldPassword, password } } = opts
+    await service.updatePassword(
+      id,
+      oldPassword,
+      password
+    )
+    return { ret: true }
+  }
+
+  async function updateExt (opts) {
+    const { Mode } = service
+    const { params: { id, extmode }, data } = opts
+    let mode = Mode.merge
+    if (extmode === 'ext') {
+    } else if (extmode === 'extreplace') {
+      mode = Mode.replace
+    } else if (extmode === 'extassign') {
+      mode = Mode.assign
     } else {
       return
     }
-    await service.updateUserExt(opts.params.id, opts.data, mode)
-    return { ret: 1 }
+    await service.updateUserExt(id, data, mode)
+    return { ret: true }
   }
 
   const router = ms.router()
@@ -38,29 +67,16 @@ module.exports = function (service, opts = {}) {
     .add('/signon', 'post', signon)
     .add('/signup', 'post', signup)
     .use('/users/:id/avatar', avatar(service, opts))
-    .add('/users/:id/exists', 'get', async opts => {
-      const doc = await service.findUser(opts.params.id)
-      if (doc) {
-        return { ret: doc.id }
-      } else {
-        return { ret: false }
-      }
-    })
+    .add('/users/:id/exists', 'get', exists)
     .add('/users', 'post', signup)
-    .add('/users/:id', 'post', async opts => {
-      await service.updateUser(opts.params.id, opts.data)
-      return { ret: 1 }
-    })
-    .add('/users/:id/password', 'post', async opts => {
-      await service.updatePassword(opts.params.id, opts.data.oldPassword, opts.data.password)
-      return { ret: 1 }
-    })
+    .add('/users/:id', 'post', updateUser)
+    .add('/users/:id/password', 'post', updatePassword)
+    .add('/users/:id/password', 'put', updatePassword)
     .add('/users/:id/:extmode', 'post', updateExt)
 
-  service.onReady()
-    .then(doc => {
-      router.use('/users', service.backend.router)
-    })
+  service.onReady().then(() => {
+    router.use('/users', service.backend.router)
+  })
 
   return router
 }

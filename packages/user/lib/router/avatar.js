@@ -1,5 +1,5 @@
-const MS = require('jm-ms-core')
-let ms = new MS()
+const { ms } = require('jm-server')
+
 module.exports = function (service) {
   const router = ms.router()
   router

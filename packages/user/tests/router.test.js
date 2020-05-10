@@ -58,6 +58,19 @@ let prepare = async function () {
 }
 
 describe('router', () => {
+  test('signon and updatePassword', async () => {
+    let { id } = await prepare()
+    const { account: username, password } = user
+    let doc = await router.post(`/signon`, { username, password })
+    console.log(doc)
+    expect(doc.id === id).toBeTruthy()
+    const newpassword = '888'
+    await router.post(`/users/${id}/password`, { oldPassword: password, password: newpassword })
+    doc = await router.post(`/signon`, { username, password: newpassword })
+    console.log(doc)
+    expect(doc.id === id).toBeTruthy()
+  })
+
   test('exists', async () => {
     let doc = await prepare()
     doc = await router.get(`/users/${doc.id}/exists`)
