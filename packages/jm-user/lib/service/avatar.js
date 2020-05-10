@@ -9,15 +9,9 @@ module.exports = function (service, opts = {}) {
     const file = `${root}${prefix}/${id}.img`
     const base64Data = imageData.replace(/^data:image\/\w+;base64,/, '')
     const dataBuffer = Buffer.from(base64Data, 'base64')
-    return new Promise(function (resolve, reject) {
-      fse.ensureFile(file, function (err) {
-        if (err) throw err
-        fse.writeFile(file, dataBuffer, function (err) {
-          if (err) throw err
-          resolve(true)
-        })
-      })
-    })
+    await fse.ensureFile(file)
+    await fse.writeFile(file, dataBuffer)
+    return true
   }
 
   function get (id) {
