@@ -1,15 +1,105 @@
+# 约定
+# schema定义名称大写字母开头代表一个对象类型，小写字母开头代表一个基本类型
+# 例如 Role表示{id:'guest'} role表示'guest'
+# Roles表示[{id:'guest'}] roles表示['guest']
 openapi: 3.0.0
-# Added by API Auto Mocking Plugin
 servers:
+  - url: https://api.jamma.cn/user
+  - url: http://api.l.jamma.cn/user
   - url: http://gateway.l.jamma.cn/user
-  - url: http://api.jamma.cn/user
+  - url: http://localhost:3000/user
 info:
-  version: "2.0.0"
+  version: '2.0.0'
   title: jm-user-api
   description: 用户系统API
+  contact:
+    name: jeff
+    url: 'https://github.com/jammacn'
+    email: jeff@jamma.cn
+  license:
+    name: Apache 2.0
+    url: 'http://www.apache.org/licenses/LICENSE-2.0.html'
+tags:
+  - name: base
+    description: 常用接口
+externalDocs:
+  url: 'https://github.com/jm-root/user'
 paths:
-  /users/{id}:
+  /signup:
     post:
+      summary: 用户注册
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SimpleUser'
+      responses:
+        '200':
+          description: 注册成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        default:
+          $ref: '#/components/responses/Err'
+  /signon:
+    post:
+      summary: 用户登录
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginInfo'
+      responses:
+        '200':
+          description: 登陆成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SimpleUser'
+        default:
+          $ref: '#/components/responses/Err'
+  /users:
+    get:
+      summary: 查询用户列表
+      description: 查询用户列表
+      responses:
+        200:
+          description: 获取成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Users'
+    post:
+      summary: 创建用户
+      description: 创建用户
+      responses:
+        200:
+          description: 创建成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SimpleUser'
+  /users/{id}:
+    get:
+      summary: 获取用户信息
+      description: 获取用户信息
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+    post:
+      deprecated: true
+      summary: 更新用户
       description: 更新用户信息
       parameters:
         - name: id
@@ -29,8 +119,30 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Ret'
-    get:
-      description: 获取用户信息
+    put:
+      summary: 更新用户
+      description: 更新用户信息
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+      responses:
+        '200':
+          description: 更新成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Ret'
+    delete:
+      summary: 删除用户
+      description: 删除用户
       parameters:
         - name: id
           in: path
@@ -38,14 +150,17 @@ paths:
           schema:
             type: string
       responses:
-        '200':
-          description: 成功
+        200:
+          description: 删除成功
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/User'
+                $ref: '#/components/schemas/Ret'
+
   /users/{id}/password:
     post:
+      deprecated: true
+      summary: 修改用户密码
       description: 修改用户密码
       parameters:
         - name: id
@@ -65,16 +180,315 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Ret'
+    put:
+      summary: 修改用户密码
+      description: 修改用户密码
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Password'
+      responses:
+        '200':
+          description: 更新成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Ret'
+  /users/{id}/avatar:
+    get:
+      summary: 获取头像
+      description: 获取头像地址
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: 获取成功
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Avatar"
+    post:
+      deprecated: true
+      summary: 上传头像
+      description: 上传头像
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                imageData:
+                  type: string
+      responses:
+        200:
+          description: 上传成功
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Avatar"
+    put:
+      summary: 上传头像
+      description: 上传头像
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                imageData:
+                  type: string
+      responses:
+        200:
+          description: 上传成功
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Avatar"
+  /users/{id}/{ext}:
+    post:
+      deprecated: true
+      summary: 更新用户扩展信息
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: ext
+          in: path
+          required: true
+          schema:
+            type: string
+            enum:
+              - 'ext'
+              - 'extreplace'
+              - 'extassign'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        200:
+          description: 更新成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BoolRet'
+    put:
+      summary: 更新用户扩展信息
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: ext
+          in: path
+          required: true
+          schema:
+            type: string
+            enum:
+              - 'ext'
+              - 'extreplace'
+              - 'extassign'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        200:
+          description: 更新成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BoolRet'
+  /users/{id}/exists:
+    get:
+      summary: 用户是否存在
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: 获取成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringRet'
+
 components:
   schemas:
+    List:
+      type: object
+      description: 列表
+      properties:
+        rows:
+          type: array
+          items:
+            type: object
+      required:
+        - rows
+    Err:
+      type: object
+      properties:
+        err:
+          type: integer
+          format: int32
+          example: 1
+          description: 错误编码
+        msg:
+          type: string
+          example: Fail
+          description: 错误信息
+        status:
+          type: integer
+          format: int32
+          example: 500
+          description: 状态码
+    BoolRet:
+      type: object
+      properties:
+        ret:
+          type: boolean
+          format: int32
+          example: true
+    StringRet:
+      type: object
+      properties:
+        ret:
+         type: string
+    Ret:
+      type: object
+      properties:
+        ret:
+          type: integer
+          format: int32
+          example: 0
+          description: 0 失败 1 成功
+    Help:
+      type: object
+      description: 版本信息
+      properties:
+        name:
+          type: string
+          example: acl
+        title:
+          type: string
+          example: 查
+          description: 标题
+    LoginInfo:
+      type: object
+      properties:
+        username:
+          type: string
+          description: 账号
+          example: 'root'
+        password:
+          type: string
+          description: 密码
+          example: '123'
+      description: 账号密码
+    SimpleUser:
+      type: object
+      properties:
+        id:
+          type: string
+        uid:
+          type: integer
+      description: 简单用户信息
     User:
       type: object
       properties:
+        id:
+          type: string
+        uid:
+          type: integer
+        account:
+          type: string
+        email:
+          type: string
+        mobile:
+          type: string
+        wechat:
+          type: string
         nick:
           type: string
-          example: 'jeff'
+        avatarUrl:
+          type: string
+        gender:
+          type: integer
+        age:
+          type: integer
+        country:
+          type: string
+        province:
+          type: string
+        city:
+          type: string
+        area:
+          type: string
+        birthday:
+          type: string
+          example: "1996-01-01"
+        active:
+          type: integer
+        status:
+          type: integer
+        ip:
+          type: string
+        name:
+          type: string
+        idtype:
+          type: integer
+        idcard:
+          type: string
+        address:
+          type: string
+        signature:
+          type: string
+        tags:
+          type: object
         ext:
           type: object
+        crtime:
+          type: string
+          example: "1996-01-01"
+        moditime:
+          type: string
+        creatorId:
+          type: integer
+        creator:
+          type: string
+        _id:
+          type: string
       description: 用户信息
     Password:
       type: object
@@ -82,13 +496,72 @@ components:
         oldPassword:
           type: string
         password:
-          type: object
+          type: string
       description: 密码信息
-    Ret:
-      type: object
-      properties:
+    Users:
+      type: array
+      items:
+        $ref: "#/components/schemas/User"
+    Avatar:
+       type: object
+       properties:
         ret:
-          type: integer
-          format: int32
-          example: 1
-      description: 结果信息
+          type: string
+          example: '/596d5cb3baeeaf00203de4ec.img'
+  parameters:
+    id:
+      name: id
+      in: path
+      description: id
+      required: true
+      schema:
+        type: string
+    fields:
+      name: fields
+      description: 指定需要返回的字段，默认全部返回
+      in: query
+      schema:
+        type: array
+        items:
+          type: string
+      examples:
+        all:
+          $ref: '#/components/examples/allfields'
+        fields:
+          $ref: '#/components/examples/fields'
+  responses:
+    Err:
+      description: 返回错误
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Err'
+    BoolRet:
+      description: 返回Boolean结果
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/BoolRet'
+    Ret:
+      description: 返回结果
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Ret'
+    Help:
+      description: 返回版本信息
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Help'
+  examples:
+    id:
+      summary: 用户
+      value: '5d9d5af874050000c7006b43'
+    allfields:
+      summary: 所有字段
+      value: []
+    fields:
+      summary: 字段id
+      value: ['id']
+      

@@ -218,8 +218,9 @@ module.exports = class extends Service {
     if (!doc) throw error.err(Err.FA_USER_NOT_EXIST)
     if (!doc.active) throw error.err(Err.FA_ACCOUNT_BAN)
     if (!this.checkPassword(doc, password)) throw error.err(Err.FA_INVALID_PASSWD)
-    this.emit('user.signon', { id: doc.id })
-    return { id: doc.id }
+    const { id, uid } = doc
+    this.emit('user.signon', { id })
+    return { id, uid }
   }
 
   /**
