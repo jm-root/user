@@ -70,6 +70,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Users'
+        default:
+          $ref: '#/components/responses/Err'
     post:
       summary: 创建用户
       description: 创建用户
@@ -80,6 +82,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/SimpleUser'
+        default:
+          $ref: '#/components/responses/Err'
   /users/{id}:
     get:
       summary: 获取用户信息
@@ -97,6 +101,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/User'
+        default:
+          $ref: '#/components/responses/Err'
     post:
       deprecated: true
       summary: 更新用户
@@ -119,6 +125,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Ret'
+        default:
+          $ref: '#/components/responses/Err'
     put:
       summary: 更新用户
       description: 更新用户信息
@@ -140,6 +148,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Ret'
+        default:
+          $ref: '#/components/responses/Err'
     delete:
       summary: 删除用户
       description: 删除用户
@@ -156,7 +166,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Ret'
-
+        default:
+          $ref: '#/components/responses/Err'
   /users/{id}/password:
     post:
       deprecated: true
@@ -180,6 +191,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Ret'
+        default:
+          $ref: '#/components/responses/Err'
     put:
       summary: 修改用户密码
       description: 修改用户密码
@@ -201,6 +214,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Ret'
+        default:
+          $ref: '#/components/responses/Err'
   /users/{id}/avatar:
     get:
       summary: 获取头像
@@ -218,6 +233,8 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Avatar"
+        default:
+          $ref: '#/components/responses/Err'
     post:
       deprecated: true
       summary: 上传头像
@@ -243,6 +260,8 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Avatar"
+        default:
+          $ref: '#/components/responses/Err'
     put:
       summary: 上传头像
       description: 上传头像
@@ -267,6 +286,8 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Avatar"
+        default:
+          $ref: '#/components/responses/Err'
   /users/{id}/{ext}:
     post:
       deprecated: true
@@ -298,6 +319,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/BoolRet'
+        default:
+          $ref: '#/components/responses/Err'
     put:
       summary: 更新用户扩展信息
       parameters:
@@ -327,6 +350,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/BoolRet'
+        default:
+          $ref: '#/components/responses/Err'
   /users/{id}/exists:
     get:
       summary: 用户是否存在
@@ -343,7 +368,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/StringRet'
-
+        default:
+          $ref: '#/components/responses/Err'
 components:
   schemas:
     List:
