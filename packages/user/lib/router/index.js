@@ -3,7 +3,9 @@ const { ms } = require('jm-server')
 
 module.exports = function (service, opts = {}) {
   async function signon (opts) {
-    const { data: { username, password } } = opts
+    const {
+      data: { username, password }
+    } = opts
     return service.signon(username, password)
   }
 
@@ -20,7 +22,9 @@ module.exports = function (service, opts = {}) {
   }
 
   async function exists (opts) {
-    const { params: { id } } = opts
+    const {
+      params: { id }
+    } = opts
     const doc = await service.findUser(id)
     if (doc) {
       return { ret: doc.id }
@@ -30,24 +34,29 @@ module.exports = function (service, opts = {}) {
   }
 
   async function updateUser (opts) {
-    const { params: { id }, data } = opts
+    const {
+      params: { id },
+      data
+    } = opts
     await service.updateUser(id, data)
     return { ret: true }
   }
 
   async function updatePassword (opts) {
-    const { params: { id }, data: { oldPassword, password } } = opts
-    await service.updatePassword(
-      id,
-      oldPassword,
-      password
-    )
+    const {
+      params: { id },
+      data: { oldPassword, password }
+    } = opts
+    await service.updatePassword(id, oldPassword, password)
     return { ret: true }
   }
 
   async function updateExt (opts) {
     const { Mode } = service
-    const { params: { id, extmode }, data } = opts
+    const {
+      params: { id, extmode },
+      data
+    } = opts
     let mode = Mode.merge
     if (extmode === 'ext') {
     } else if (extmode === 'extreplace') {
@@ -70,9 +79,11 @@ module.exports = function (service, opts = {}) {
     .add('/users/:id/exists', 'get', exists)
     .add('/users', 'post', signup)
     .add('/users/:id', 'post', updateUser)
+    .add('/users/:id', 'put', updateUser)
     .add('/users/:id/password', 'post', updatePassword)
     .add('/users/:id/password', 'put', updatePassword)
     .add('/users/:id/:extmode', 'post', updateExt)
+    .add('/users/:id/:extmode', 'put', updateExt)
 
   service.onReady().then(() => {
     router.use('/users', service.backend.router)
