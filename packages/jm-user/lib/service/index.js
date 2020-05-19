@@ -3,7 +3,7 @@ const validator = require('validator')
 const bson = require('bson')
 const error = require('jm-err')
 const log = require('jm-log4js')
-const { hasher } = require('jm-hasher')
+const hasher = require('jm-hasher')
 const { utils } = require('jm-utils')
 const { Service } = require('jm-server')
 
