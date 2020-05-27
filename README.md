@@ -25,6 +25,9 @@
     - [gateway](https://github.com/jm-root/gateway)(网关服务,代理其它服务接口调用)
     - [passport](https://github.com/jm-root/passport)(该服务将通过gateway服务调用user服务相应接口实现账号注册和登录功能,详细说明请看passport服务)
     - [mq](https://github.com/jm-root/mq)(消息队列服务)
+    
+## 详细API
+API文档请参见：[swagger文档](http://apidoc.jamma.cn/?urls.primaryName=user%202.1)
   
 ## 构建运行
 ````
@@ -35,6 +38,9 @@ npm run start
 ````
 
 ## 部署
+
+采用docker部署，容器默认监听80端口
+
 docker镜像: `jamma/user`
 
 环境变量见后面的[环境变量](#环境变量)说明
@@ -47,7 +53,7 @@ docker run -d name user  -e xxx jamma/user
 基本配置 请参考 [jm-server](https://github.com/jm-root/server/tree/master/packages/jm-server)
 
 | 配置项           | 默认值        | 描述        |
-| :---             |  :----:      | :---        |
+| :---             |  :---:       | :---        |
 |db                |              |必填, 数据库连接地址, 如：mysql://xxx或mongodb://xxx|
 |secret            |""            |密钥, 用于加密明文密码|
 |hash              |"sha256"      |密码哈希算法, 支持sha256, md5, sm3|
@@ -55,7 +61,7 @@ docker run -d name user  -e xxx jamma/user
 |table_name_prefix |""            |数据表名称前缀|
 |sequence_user_id  |"userId"      |uid序列名称|
 |disable_auto_uid  |false         |是否禁用自动Uid生成|
-|service_name      |"user"        |服务名称|
+|service_name      |"user"        |链路追踪登记的服务名称|
 |jaeger            |              |选填, 链路跟踪, 默认不开启, 如配置了链路地址将开启|
 |gateway           |              |选填, Gateway服务器Uri, 如果配置了此参数，自动启用jm-user-mq|
 
