@@ -17,7 +17,7 @@ const BackendSequelize = require('jm-user-sequelize')
 const { Err, Mode } = consts
 
 function isMobile (mobile) {
-  let pattern = /^[1][3,4,5,7,8,9][0-9]{9}$/
+  let pattern = /^1[3456789]\d{9}$/
   return pattern.test(mobile)
 }
 
