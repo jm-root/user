@@ -1,5 +1,8 @@
 # History
 
+## 2.1.3 / 2021-07-22
+- fix mobile verify
+
 ## 2.1.0 / 2020-04-30
 - support mysql and mongodb
 
